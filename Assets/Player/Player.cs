@@ -1,0 +1,15 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Player : PlayerBase
+{
+	// Use this for initialization
+	protected override void Start ()
+    {
+        base.Start();
+        
+
+	}
+	
+}
