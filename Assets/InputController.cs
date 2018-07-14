@@ -5,24 +5,26 @@ using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
 using System;
+using System.Linq;
 
 public class InputController : MonoBehaviour
 {
     public static Action _DoubleClickEventHandler = null;
-    public static Action<Vector2> _DragEventHandler = null;
+    public static Action<Vector3> _DragEventHandler = null;
     private Camera _camera = null;
     // Use this for initialization
     void Start()
     {
         var clickStream = Observable.EveryUpdate()
-            .Where(_ => Input.GetMouseButtonDown(0));
+            .Select(_ => Input.GetMouseButton(0));
+
         var clickUpStream = Observable.EveryUpdate()
             .Where(_ => Input.GetMouseButtonUp(0));
 
         var dragStream = Observable.EveryUpdate()
             .SkipUntil(clickStream)
-            .Select(_ => new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"))) // 변화량
-            .TakeUntil(clickUpStream)
+            .Select(_ => new Vector3(Input.GetAxis("Mouse X"), 0, Input.GetAxis("Mouse Y"))) // 변화량
+            .TakeUntil(clickStream)
             .Repeat()
             .Subscribe(_ =>
             {
@@ -47,13 +49,5 @@ public class InputController : MonoBehaviour
 
                 _DoubleClickEventHandler();
             });
-        //_camera = Camera.main;
-        //_camera.gameObject.UpdateAsObservable()
-        //    .SkipUntil(this.OnMouseDownAsObservable())
-        //    .Select(_ => new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")))
-        //    .TakeUntil(this.OnMouseUpAsObservable())
-        //    .Repeat()
-        //    .Subscribe(move => { Debug.Log(move); });
-
     }
 }

@@ -8,6 +8,20 @@ public class Player : PlayerBase
 	protected override void Start ()
     {
         base.Start();
-	}
-	
+        _rigidbody = GetComponent<Rigidbody>();
+        InputController._DragEventHandler += OnDragEvent;
+    }
+
+    private void OnDestroy()
+    {
+        InputController._DragEventHandler -= OnDragEvent;
+    }
+    protected override void Activate()
+    {
+    }
+
+    private void OnDragEvent(Vector3 vec)
+    {
+        Move(vec);
+    }
 }
