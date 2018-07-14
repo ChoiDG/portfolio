@@ -8,8 +8,6 @@ public class Player : PlayerBase
 	protected override void Start ()
     {
         base.Start();
-        
-
 	}
 	
 }
