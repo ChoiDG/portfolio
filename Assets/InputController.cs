@@ -16,7 +16,7 @@ public class InputController : MonoBehaviour
     void Start()
     {
         var clickStream = Observable.EveryUpdate()
-            .Select(_ => Input.GetMouseButton(0));
+            .Select(_ => Input.GetMouseButtonDown(0));
 
         var clickUpStream = Observable.EveryUpdate()
             .Where(_ => Input.GetMouseButtonUp(0));
@@ -24,7 +24,7 @@ public class InputController : MonoBehaviour
         var dragStream = Observable.EveryUpdate()
             .SkipUntil(clickStream)
             .Select(_ => new Vector3(Input.GetAxis("Mouse X"), 0, Input.GetAxis("Mouse Y"))) // 변화량
-            .TakeUntil(clickStream)
+            .TakeUntil(clickUpStream)
             .Repeat()
             .Subscribe(_ =>
             {
