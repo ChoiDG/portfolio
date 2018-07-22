@@ -31,17 +31,17 @@ public class InputController : MonoBehaviour
                 Physics.Raycast(ray, out rayHit);
                 return rayHit.point;
             });
-
+        var clickUp = Observable.EveryUpdate().Where(x => Input.GetMouseButtonUp(0));
         Observable.CombineLatest(clickDown, drag)
-            .TakeUntil(Observable.EveryUpdate().Where(x=>Input.GetMouseButtonUp(0)))
+            .TakeUntil(clickUp)
             .Repeat()
-            .Select(point => new Vector3(point[1].x - point[0].x, 0, point[1].y - point[0].y))
+            .Select(point => new Vector3((point[1].x - point[0].x) / 10, 0, (point[1].y - point[0].y) / 10))
             .Subscribe(point =>
             {
 #if _DEBUG_
-                Debug.Log("CombineLatest :" +  point);
+                Debug.Log("CombineLatest :" + point);
 #endif
-                if(_DragEventHandler != null)
+                if (_DragEventHandler != null)
                 {
                     _DragEventHandler(point);
                 }
