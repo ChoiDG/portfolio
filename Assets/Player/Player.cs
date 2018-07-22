@@ -4,24 +4,17 @@ using UnityEngine;
 
 public class Player : PlayerBase
 {
-	// Use this for initialization
-	protected override void Start ()
+    protected override void Start()
     {
-        base.Start();
-        _rigidbody = GetComponent<Rigidbody>();
-        InputController._DragEventHandler += OnDragEvent;
-    }
-
-    private void OnDestroy()
-    {
-        InputController._DragEventHandler -= OnDragEvent;
+        InputController._DragEventHandler += OnRecvDragPoint;
     }
     protected override void Activate()
     {
     }
 
-    private void OnDragEvent(Vector3 vec)
+    private void OnRecvDragPoint(Vector3 pos)
     {
-        Move(vec);
+        Debug.Log(pos);
+        Move(pos);
     }
 }

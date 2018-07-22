@@ -11,34 +11,40 @@ public class InputController : MonoBehaviour
 {
     public static Action _DoubleClickEventHandler = null;
     public static Action<Vector3> _DragEventHandler = null;
-    private Camera mainCamera = null;
 
     private Ray ray;
     private RaycastHit rayHit;
-    private Vector3 _buttondownPos;
 
     // Use this for initialization
     void Start()
     {
-        mainCamera = Camera.main;
-        var drag = Observable.EveryUpdate().Select(_ => Input.mousePosition);
-        var clickDown = Observable.EveryUpdate().Where(_ => Input.GetMouseButtonDown(0))
-            .Select(_ =>
+        var drag = Observable.EveryUpdate().Select(x =>
+        {
+            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Physics.Raycast(ray, out rayHit);
+            return rayHit.point;
+        });
+        var clickDown = Observable.EveryUpdate().Where(x => Input.GetMouseButtonDown(0))
+            .Select(x =>
             {
-                ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+                ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 Physics.Raycast(ray, out rayHit);
-                Debug.Log(rayHit.point);
-                _buttondownPos = rayHit.point;
                 return rayHit.point;
             });
 
-        Observable.EveryUpdate().Select(_ => Input.mousePosition)
-            .SkipUntil(Observable.EveryUpdate().Where(_=>Input.GetMouseButtonDown(0)))
-            .TakeUntil(Observable.EveryUpdate().Where(_ => Input.GetMouseButtonUp(0)))
+        Observable.CombineLatest(clickDown, drag)
+            .TakeUntil(Observable.EveryUpdate().Where(x=>Input.GetMouseButtonUp(0)))
             .Repeat()
-            .Subscribe(_ =>
+            .Select(point => new Vector3(point[1].x - point[0].x, 0, point[1].y - point[0].y))
+            .Subscribe(point =>
             {
-                Debug.Log(string.Format("{0} : {1}", _buttondownPos, _));
+#if _DEBUG_
+                Debug.Log("CombineLatest :" +  point);
+#endif
+                if(_DragEventHandler != null)
+                {
+                    _DragEventHandler(point);
+                }
             });
     }
 
