@@ -11,9 +11,9 @@ public abstract class PlayerBase : MonoBehaviour
     {
 	}
 
-    protected void Move(Vector3 vec)
+    protected void Move(Vector2 vec)
     {
-        transform.localPosition += vec;
+        transform.localPosition += new Vector3(vec.x, 0, vec.y);
     }
 
     protected abstract void Activate();
